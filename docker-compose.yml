@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  mongo:
+    image: mongo:3.4
+    ports:
+        - 27017:27017
+
+  api:
+    build: './'
+    volumes:
+      - ./project:/service/project
+      - ./configs:/service/configs
+      - ./service_logs:/data/service_logs
+
+    stdin_open: true
+    tty: true
+
+    ports:
+      - 9002:9002
+
+    links:
+      - mongo:mongo
