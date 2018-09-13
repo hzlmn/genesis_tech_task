@@ -1,5 +1,11 @@
 # Genesis Tech Task
 
+Service for lookup available tags in text
+
+Tags length > 10e6
+
+Text ~= 600B
+
 How to run
 
 ```sh
