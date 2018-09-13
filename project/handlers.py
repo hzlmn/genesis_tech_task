@@ -1,6 +1,6 @@
 from aiohttp import web
 
-from .helpers import lookup_word
+from .algo import lookup_word
 from .trafarets import GetTagsTrafaret, TagsOutputTrafaret
 
 

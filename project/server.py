@@ -1,5 +1,7 @@
+import argparse
 import asyncio
 import logging
+import sys
 
 import aiohttp_debugtoolbar
 from aiohttp import web
@@ -7,7 +9,7 @@ from aiohttp import web
 from configs.base import Config as BaseConfig
 
 from .handlers import MainHandler
-from .helpers import setup_mongo
+from .helpers import setup_mongo, setup_mongodb_parser
 from .middlewares import validation_middleware
 from .routes import setup_main_handler
 from .storages import TagStorage
@@ -21,14 +23,50 @@ class AiohttpServer:
             loop = asyncio.get_event_loop()
 
         self.loop = loop
-
-        if not isinstance(config, BaseConfig):
-            raise RuntimeError(
-                "Config object should be instance of BaseConfig")
-
         self.config = config
 
+    def configurate(self):
+        options = self.parser.parse_args(sys.argv[1:])
+
+        options = {
+            key: value
+            for key, value in vars(options).items()
+            if value is not None
+        }
+
+        config = self.config(**options)
+
+        return config
+
+    def setup_argparse(self):
+        parser = setup_mongodb_parser(
+            argparse.ArgumentParser("aiohttp-server"))
+
+        parser.add_argument(
+            "--port",
+            type=int,
+            dest="PORT"
+        )
+
+        parser.add_argument(
+            "--timeout",
+            type=int,
+            dest="TIMEOUT"
+        )
+
+        parser.add_argument(
+            "--db_name",
+            type=str,
+            dest="DB_NAME"
+        )
+
+        return parser
+
     async def setup(self):
+        self.parser = self.setup_argparse()
+
+        self.config = self.configurate()
+
         self.middlewares = [validation_middleware]
 
         self.app = web.Application(

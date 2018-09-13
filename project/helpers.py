@@ -18,31 +18,17 @@ async def setup_mongo(config):
     return database
 
 
-def lookup_word(word, text, words_shift=2):
-    word = word.strip().split(" ")
-    text = text.strip().split(" ")
+def setup_mongodb_parser(parser, prefix="mongo_"):
+    parser.add_argument(
+        f"--{prefix}host",
+        type=str,
+        dest="MONGO_HOST"
+    )
 
-    cursor = 0
-    index = 0
-    skipped = 0
+    parser.add_argument(
+        f"--{prefix}port",
+        type=int,
+        dest="MONGO_PORT"
+    )
 
-    while cursor < len(text):
-        curr_word = text[cursor]
-        part = word[index]
-
-        if curr_word == part:
-            if index == len(word) - 1:
-                return True
-
-            skipped = 0
-            index += 1
-        else:
-            if skipped < words_shift:
-                skipped += 1
-            else:
-                index = 0
-                skipped = 0
-
-        cursor += 1
-
-    return False
+    return parser

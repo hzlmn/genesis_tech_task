@@ -1,8 +1,11 @@
+from dataclasses import dataclass
+
 from .base import Config as BaseConfig
 
 
+@dataclass
 class Config(BaseConfig):
 
-    DEBUG = True
+    DEBUG: bool = True
 
     MONGO_HOST: str = "mongo"
